@@ -121,7 +121,8 @@ void rotate(Stack **n, char *tag)
 	Stack	*temp;
 	Stack	*first;
 	int	i;
-
+	
+	i = 0;
 	temp = *n;
 	first = *n;
 	while(temp->next != NULL)
@@ -131,7 +132,25 @@ void rotate(Stack **n, char *tag)
 	first->next = NULL;
 	while(tag[i])
 		i++;
-	write(1, &tag, i);
+	//write(1, &tag, i);
+}
+void reverse_rotate(Stack **n)
+{
+	//5 8 6  6 5 8
+	Stack	*last;
+	Stack	*bef_node;
+
+	bef_node = NULL;
+	last =  *n;
+	while(last->next)
+	{
+		bef_node = last;
+		last = last->next;
+	}
+	bef_node->next = NULL;
+	last->next = *n;
+	(*n)=last;
+
 }
 int main(int argc, char *argv[]) {
     Stack *a = NULL;
@@ -155,7 +174,9 @@ int main(int argc, char *argv[]) {
     }
     b = (Stack *) malloc(sizeof(Stack));
     b->content = 4;
-    rotate(&a, "ra");  
+    //reverse_rotate(&a);
+    display_list(a);
+    rotate(&a, "m");  
     display_list(a);
     display_list(b);
     return 0;
