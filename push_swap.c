@@ -3,7 +3,9 @@
 #include <unistd.h>
 typedef struct Node {
     int content;
+    int	index;
     struct Node *next;
+    struct Node *previous;
 } Stack;
 
 int ft_atoi(char *str) {
@@ -42,6 +44,7 @@ Stack *create_node(int num) {
         return NULL;
     new_node->content = num;
     new_node->next = NULL;
+    new_node->previous = NULL;
     return new_node;
 }
 
@@ -53,24 +56,25 @@ void display_list(Stack *head) {
     }
     printf("NULL\n");
 }
-
-void insert_on_tail(Stack **head, int content) {
-    Stack *temp;
+void insert_on_top(Stack **head, int content) {
     Stack *new_node = create_node(content);
 
+    // Se a lista estiver vazia, o novo nó é o primeiro e único nó
     if (*head == NULL) {
         *head = new_node;
         return;
     }
-    temp = *head;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = new_node;
+
+    // Caso contrário, insere o novo nó no topo da pilha
+    new_node->next = *head;           // O novo nó aponta para o topo atual
+    (*head)->previous = new_node;     // O antigo topo aponta para o novo nó
+    *head = new_node;                 // Atualiza o topo da pilha para o novo nó
 }
-void	swap(Stack **head, char *tag)
+
+/*void	swap(Stack **head, char *tag)
 {
 	if(head == NULL || *head == NULL || (*head)->next == NULL)
-		return;
+		   new_node->next = *head;return;
 	Stack *first;
 	Stack *second;
 	
@@ -81,7 +85,64 @@ void	swap(Stack **head, char *tag)
 	*head = second;
 	write(1, "p", 1);
 	write(1, &tag, 1);
+}*/
+/*
+void swap(Stack **head, char *tag) {
+    // Verifica se a lista tem pelo menos dois elementos
+    if (head == NULL || *head == NULL || (*head)->next == NULL) {
+        return;
+    }
+
+    Stack *first = *head;
+    Stack *second = first->next;
+
+    // Troca os ponteiros de next e previous
+    first->next = second->next;
+    if (second->next != NULL) {
+        second->next->previous = first;
+    }
+
+    second->previous = NULL;  // O segundo nó não tem nó anterior após a troca
+    second->next = first;     // O segundo nó agora aponta para o primeiro
+
+    first->previous = second; // O primeiro nó agora aponta para o segundo
+
+    // Atualiza o ponteiro head da lista
+    *head = second;
+
+    // Se necessário, faça o output com write
+    // write(1, "p", 1);
+    // write(1, tag, 1);
 }
+ */
+void swap(Stack **head, char *tag) {
+    // Verifica se a lista tem pelo menos dois elementos
+    if (head == NULL || *head == NULL || (*head)->next == NULL) {
+        return;
+    }
+
+    Stack *first = *head;
+    Stack *second = first->next;
+
+    // Troca os ponteiros de next e previous
+    first->next = second->next;    // O primeiro agora aponta para o próximo de second
+    if (second->next != NULL) {
+        second->next->previous = first;  // O próximo de second agora aponta para first
+    }
+
+    second->previous = NULL;       // O segundo nó será o novo head e não tem anterior
+    second->next = first;          // O segundo nó agora aponta para o primeiro
+
+    first->previous = second;      // O primeiro agora tem second como anterior
+
+    // Atualiza o ponteiro head da lista
+    *head = second;
+
+    // Se necessário, escreva alguma saída para verificar
+    // write(1, "p", 1);
+    // write(1, tag, 1);
+}
+
 
 void double_swap(Stack **a, Stack **b)
 {
@@ -152,6 +213,91 @@ void reverse_rotate(Stack **n)
 	(*n)=last;
 
 }
+int	stack_len(Stack **list)
+{
+	int	i;
+
+	i = 0;
+		while(list)
+		{
+			i++;
+			list = list->next;
+		}
+	return (i);
+}
+/*
+void	create_index(Stack list)
+{
+	Stack *tem;
+
+	temp = 
+}*/
+/*
+void    create_index(Stack **list, int num)
+{
+        Stack *temp;
+        int     comp;
+        int     limit;
+
+        limit = stack_len(list);
+        comp = 0;
+        temp = *list;
+        while(temp->index != -1)
+                temp = temp->next;
+        if(!temp)
+                return;
+        comp = temp->content;
+        while(temp)
+        {
+                if(temp->content < comp)
+                        comp = temp->content;
+                temp =temp->next;
+        }
+        while (temp && temp->previous && temp->content != comp)
+                temp = temp->previous;
+        temp->index = num;
+        num++;
+        if(num < limit)
+                create_index(list, num);
+}*/
+int	list_len(Stack **list)
+{
+	int	i;
+
+	 i = 0;
+	 while(list)
+	 {
+	 	list = list->next;
+		i++;
+	 }
+	 return (i);
+}
+void	create_index(stack **list, int num_index)
+{
+	int	limit;
+	Stack	*temp;
+	int	cont;
+
+	cont = 0;
+	temp = *list;
+	limit = list_len;
+	while(temp)
+	{
+		if(temp->index == -1)
+			temp = temp->next;
+		cont = temp->content;
+		if(cont < temp->next->content && temp->next->index == -1)
+			cont = temp->next->content;
+		temp = temp->next;
+
+	}
+	while(temp->content != cont)
+		temp = temp->previous;
+	temp->index = num_index;
+	num_index++;
+	if(num_index < limit)
+		create_index(list, num_index);
+}
 int main(int argc, char *argv[]) {
     Stack *a = NULL;
     Stack *b = NULL;
@@ -161,24 +307,27 @@ int main(int argc, char *argv[]) {
     i = 1;
     if (argc == 2) {
         if (count_space(argv[1]) == 0) { // Corrige o uso da função
-            insert_on_tail(&a, ft_atoi(argv[1])); // Insere o número na lista
+            insert_on_top(&a, ft_atoi(argv[1])); // Insere o número na lista
         }
     }
     else if (argc > 2)
     {
     	while(i <= (argc - 1))
 	{
-		insert_on_tail(&a, ft_atoi(argv[i]));
+		insert_on_top(&a, ft_atoi(argv[i]));
 		i++;
 	}
     }
+    /*
     b = (Stack *) malloc(sizeof(Stack));
     b->content = 4;
-    //reverse_rotate(&a);
+    reverse_rotate(&a);
     display_list(a);
     rotate(&a, "m");  
     display_list(a);
-    display_list(b);
+    display_list(b);*/
+    swap(&a, "nk");
+    display_list(a);
     return 0;
 }
 
