@@ -180,46 +180,103 @@ void	go_home(Stack **list_a, Stack **list_b)
 
 
 }
-void	go_away(Stack **list_a, Stack **list_b, int num)
+void	clear_top(Stack	**list_a, Stack **list_b)
 {
-	if(list_a == NULL)
-		return;
-	while((*list_a) != NULL)
+	if (list_a && list_b)
 	{
-		if((*list_a)->in_order ==1)
+		while(list_a->in_order == 1)
+		{
 			push(list_a, list_b);
-		else if((*list_a)->in_order== 0 && (*list_a)->content < num)
-			return;
-		list_a = (*list_a)->next;
+		}
 	}
+	return;
+}
+int	check_list(list_a)
+{
+	int	pivot;
+	Stack	*temp
+
+	temp = list_a;
+	pivot = temp->content;
+	while(temp)
+		temp = temp->next;
+	while(temp-content != pivot)
+	{
+		if(temp-content < pivot)
+			return (1);
+		temp = temp->next;
+	}
+	return (0);
+}
+void	crazy_swap(Stack *list_a)
+{
+	reverse_rotate(list_a);
+	swap(list_a);
+	rotate(list_a);
+
 }
 void	quick_sort(Stack **list_a, Stack **list_b)
 {
-	Stack	*r;
-	Stack	*l;
+	//a =      1 4 24 51  p = 51    b =  r = 25
 	int	pivot;
+	Stack	*l;
+	Stack	*r;
 
 	l = list_a;
 	r = list_a;
-
-	while(r)
-		r = r->next;
-	pivot = list_a->content;
-	while((l->next && r->previous) || l->content == r->content)
+	//if the list is in order return
+	if(in_order(list_a) == 0)
+		return;
+	pivo = l->content;
+	//if the first element of the list have the atribute in order set in 1 
+	//clear top and set a new pivot	
+	if (l->in_order == 1)
 	{
-		if(r->content < l->content)
+		clear_top(list_a, list_b);
+		pivot = l->content;
+	}
+	//check if are any less number in the list
+	if(check_list(list_a) == 0)
+	{
+		l->in_order = 1;
+		go_home(list_a, list_b);
+		quick_sort(list_a, list_b);
+	}
+	//if the list have a number less then pivot check if the next number ara less then the pivot if yes swap this two numbers
+	else if(check_list(list_a) == 1 && l->content > l->next->content)
+	{
+			swap(list_a);
+			if(check_list(list_a)== 0);
+				list_a->in_order ==1;
+			go_home(list_a, list_b);
+	}
+	//if the program hit this else its mean that we need to find a number less than the pivot
+	else
+	{
+		while(r)
+			r = r->next;
+		while(r-content != pivot)
 		{
-			reverse_rotate(
+			if(r->content > pivot)
+				push(r, list_b);
+			else if(r->content < pivot)
+			{
+				crazy_swap(list_a);
+				pivot= list_a->content;
+				//check if l->content is right
+			}
+			r = r->previous;
+			if(in_order(list_a) == 1)
+			{
+				go_home(list_a, list_b);
+				quick_sort(list_a, list_b);
+			}
 		}
-		if(r->content < pivot)
-	}	
-//	go_away(list_a, list_b, pivot);
-//	display_list(*list_b);
-	//list_b->in_order = 0;
-//	go_home(list_a, list_b);
-	
+	}
+	if(in_order(list_a) == 0)
+		quick_sort(list_a, list_b);
 
-
+	//if that element exist set pivot node like in_orderaaq
 	}
 int	main(int argc, char *argv[])
 {
