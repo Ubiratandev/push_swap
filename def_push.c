@@ -42,6 +42,8 @@ void push(Stack **origin, Stack **destiny)
         int     content;
         Stack   *temp;
 
+	if (origin == NULL)
+		return;
         content = (*origin)->content;
         if (*destiny == NULL)
                 insert_on_tail(destiny, content);
@@ -59,13 +61,12 @@ void push(Stack **origin, Stack **destiny)
 
 void    swap(Stack **head, char *tag)
 {
-        if(head == NULL || *head == NULL || (*head)->next == NULL)
+	Stack	*first;
+	Stack	*second;
+        if(*head == NULL || (*head)->next == NULL)
         {
                 return;
         }
-        Stack *first;
-        Stack *second;
-
         first = *head;
         second = first->next;
         first->next = second->next;
@@ -148,10 +149,10 @@ void insert_on_tail(Stack **head, int content) {
 }
 void reverse_rotate(Stack **n)
 {
-        //5 8 6  6 5 8
         Stack   *last;
         Stack   *bef_node;
-        if( n== NULL || *n == NULL || (*n)->next == NULL)
+
+        if(*n == NULL || (*n)->next == NULL)
                 return;
         bef_node = NULL;
         last =  *n;
@@ -166,16 +167,19 @@ void reverse_rotate(Stack **n)
         (*n)->previous = last;
         last->previous = NULL;
         *n=last;
-
 }
 
 void	go_home(Stack **list_a, Stack **list_b)
 {
 	while((*list_b))
 	{
-		push(list_b, list_a);
-		if((*list_a)->in_order == 0)
+		if ((*list_b)->in_order == 1)
+			push(list_b, list_a);
+		else if((*list_b)->in_order == 0)
+		{
+			push(list_b, list_a);
 			reverse_rotate(list_a);
+		}
 	}
 
 
